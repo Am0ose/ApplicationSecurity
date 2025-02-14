@@ -1,0 +1,10 @@
+﻿@page
+@model ApplicationSecurity.Pages.Error.ForbiddenModel
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<h1>403 - Access Denied</h1>
+<p>@Model.ErrorMessage</p>
+
+<a asp-page="/Index">Return to Homepage</a>

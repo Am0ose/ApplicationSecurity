@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ApplicationSecurity</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ApplicationSecurity.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">ApplicationSecurity</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Account/Register">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Account/Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/test">Test500</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - ApplicationSecurity - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <!-- Hidden input to store session expiry time -->
+    <input type="hidden" id="sessionExpiry" value="@Context.Session.GetString("SessionExpiry")" />
+
+    <script>
+        function deleteCookies() {
+            document.cookie.split(";").forEach(function (cookie) {
+                var name = cookie.split("=")[0].trim();
+                document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var sessionExpiryValue = document.getElementById("sessionExpiry").value;
+            console.log("Session Expiry from Hidden Field:", sessionExpiryValue); // Debugging
+
+            if (sessionExpiryValue) {
+                var expiryTime = new Date(sessionExpiryValue).getTime(); // Convert to timestamp
+                var currentTime = new Date().getTime(); // Get current time
+                var timeoutDuration = expiryTime - currentTime;
+
+                if (timeoutDuration > 0) {
+                    console.log("Session will expire in:", timeoutDuration / 1000, "seconds"); // Debugging
+
+                    setTimeout(function () {
+                        alert("Session expired. Redirecting to login page.");
+                        deleteCookies();
+                        window.location.href = "/Account/Login";
+                    }, timeoutDuration);
+                } else {
+                    console.warn("Session expiry time is already passed or incorrect format");
+                }
+            } else {
+                console.warn("Session expiry value is missing or null");
+            }
+        });
+    </script>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

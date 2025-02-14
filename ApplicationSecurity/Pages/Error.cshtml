@@ -1,0 +1,10 @@
+﻿@page "{code:int?}"
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<h1>Error @Model.StatusCode</h1>
+<p>@Model.ErrorMessage</p>
+
+<a asp-page="/Index" class="btn btn-primary">Return to Home</a>

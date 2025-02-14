@@ -1,0 +1,10 @@
+﻿@page
+@model ApplicationSecurity.Pages.Error.NotFoundModel
+@{
+    ViewData["Title"] = "Page Not Found";
+}
+
+<h1>404 - Page Not Found</h1>
+<p>@Model.ErrorMessage</p>
+
+<a asp-page="/Index">Return to Homepage</a>

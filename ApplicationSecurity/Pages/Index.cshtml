@@ -1,0 +1,50 @@
+﻿@page
+@model ApplicationSecurity.Pages.IndexModel
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+<h1>
+    Welcome to : Bookworms Online
+    (Bookstore Service) (Membership
+    Service)
+</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    @if (!string.IsNullOrEmpty(Model.LoggedInUser.ProfilePictureUrl))
+    {
+        <img src="@Model.LoggedInUser.ProfilePictureUrl" alt="Profile Picture" width="150" />
+    }
+    else
+    {
+        <p>No profile picture uploaded.</p>
+    }
+
+    <h2>Welcome, @Model.LoggedInUser.FirstName @Model.LoggedInUser.LastName</h2>
+    <p>Email: @Model.LoggedInUser.Email</p>
+    <p>Mobile: @Model.LoggedInUser.MobileNo</p>
+    <p>Billing Address: @Model.LoggedInUser.BillingAddress</p>
+    <p>Shipping Address: @Model.LoggedInUser.ShippingAddress</p>
+
+    @if (!string.IsNullOrEmpty(Model.MaskedCreditCard))
+    {
+        <p><strong>Credit Card:</strong> @Model.MaskedCreditCard</p>
+    }
+    else
+    {
+        <p><strong>Credit Card:</strong> Not available</p>
+    }
+
+    <a asp-page="/Account/Enable2FA" class="btn btn-warning">2FA Status</a>
+
+    <a asp-page="/Account/ChangePassword" class="btn btn-warning">Change Password</a>
+
+    <form method="post" asp-page="/Account/Logout" class="mt-2">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+}
+else
+{
+    <p>You are not logged in. <a asp-page="/Account/Login">Login here</a>.</p>
+}

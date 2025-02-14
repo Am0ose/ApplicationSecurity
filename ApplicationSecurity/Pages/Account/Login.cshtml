@@ -1,0 +1,55 @@
+﻿@page
+@model ApplicationSecurity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Login</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<form method="post" id="loginForm">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" class="form-control" type="password" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <div class="mt-3">
+        <a asp-page="/Account/ForgotPassword">Forgot Password?</a>
+    </div>
+
+    <!-- Hidden reCAPTCHA input -->
+    <input type="hidden" id="g-recaptcha-response" name="ReCaptchaToken" />
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+<script src="https://www.google.com/recaptcha/api.js?render=6LdkLtcqAAAAAJL2hi05mn4EFN9CSfQl4n_JwLQp"></script>
+<script>
+    grecaptcha.ready(function () {
+        grecaptcha.execute('6LdkLtcqAAAAAJL2hi05mn4EFN9CSfQl4n_JwLQp', { action: 'login' }).then(function (token) {
+            document.getElementById('g-recaptcha-response').value = token;
+            console.log("Generated reCAPTCHA Token:", token); // Debugging output
+        });
+    });
+</script>
+
+
+

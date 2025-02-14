@@ -1,0 +1,38 @@
+﻿@page
+@model ApplicationSecurity.Pages.Account.Verify2FAModel
+@{
+    ViewData["Title"] = "Verify Two-Factor Authentication";
+}
+
+<h2>Verify Two-Factor Authentication</h2>
+
+@if (Model.OTPVerified)
+{
+    <div class="alert alert-success">
+        ✅ Your OTP has been verified successfully!
+    </div>
+}
+else
+{
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@error.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label>Enter the OTP sent to your email:</label>
+            <input asp-for="OTP" class="form-control" placeholder="Enter 6-digit OTP" required />
+            <span asp-validation-for="OTP" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-2">Verify</button>
+    </form>
+}

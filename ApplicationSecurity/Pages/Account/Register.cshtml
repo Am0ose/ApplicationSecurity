@@ -1,0 +1,77 @@
+﻿@page
+@model ApplicationSecurity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Membership Registration</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Input.FirstName"></label>
+        <input asp-for="Input.FirstName" class="form-control" />
+        <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.LastName"></label>
+        <input asp-for="Input.LastName" class="form-control" />
+        <span asp-validation-for="Input.LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" class="form-control" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.MobileNo"></label>
+        <input asp-for="Input.MobileNo" class="form-control" />
+        <span asp-validation-for="Input.MobileNo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.BillingAddress"></label>
+        <input asp-for="Input.BillingAddress" class="form-control" />
+        <span asp-validation-for="Input.BillingAddress" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.ShippingAddress"></label>
+        <input asp-for="Input.ShippingAddress" class="form-control" />
+        <span asp-validation-for="Input.ShippingAddress" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.CreditCardNo"></label>
+        <input asp-for="Input.CreditCardNo" class="form-control" />
+        <span asp-validation-for="Input.CreditCardNo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.Password"></label>
+        <input asp-for="Input.Password" type="password" class="form-control" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.ConfirmPassword"></label>
+        <input asp-for="Input.ConfirmPassword" type="password" class="form-control" />
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Input.ProfilePicture"></label>
+        <input asp-for="Input.ProfilePicture" type="file" class="form-control" accept=".jpg" />
+        <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
