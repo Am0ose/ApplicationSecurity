@@ -19,6 +19,7 @@ namespace ApplicationSecurity.Pages.Account
 
         private const int MinPasswordAgeDays = 1; // Users must wait at least 1 day before changing again
         private const int MaxPasswordAgeDays = 90; // Users must change their password after 90 days
+        private const int PasswordHistoryLimit = 2; // Prevent reusing last 2 passwords
 
         public ChangePasswordModel(UserManager<User> userManager,
                                    SignInManager<User> signInManager,
@@ -62,6 +63,7 @@ namespace ApplicationSecurity.Pages.Account
                 return RedirectToPage("/Account/Login");
             }
 
+            // Check last password change date
             var lastPasswordChange = await _context.PasswordHistories
                 .Where(p => p.UserId == user.Id)
                 .OrderByDescending(p => p.CreatedAt)
@@ -74,7 +76,7 @@ namespace ApplicationSecurity.Pages.Account
 
                 if (daysSinceLastChange >= MaxPasswordAgeDays)
                 {
-                    ForcePasswordChange = true;
+                    ForcePasswordChange = true; // Force password change
                 }
             }
 
@@ -92,6 +94,7 @@ namespace ApplicationSecurity.Pages.Account
                 return Page();
             }
 
+            // Check last password change date
             var lastPasswordChange = await _context.PasswordHistories
                 .Where(p => p.UserId == user.Id)
                 .OrderByDescending(p => p.CreatedAt)
@@ -100,7 +103,7 @@ namespace ApplicationSecurity.Pages.Account
 
             if (lastPasswordChange != default)
             {
-                var daysSinceLastChange = (DateTime.UtcNow - lastPasswordChange).TotalDays;
+                var daysSinceLastChange = (DateTime.UtcNow - lastPasswordChange).TotalSeconds;
 
                 if (daysSinceLastChange < MinPasswordAgeDays)
                 {
@@ -109,10 +112,30 @@ namespace ApplicationSecurity.Pages.Account
                 }
             }
 
+            // Get the last 2 password hashes
+            var lastPasswords = await _context.PasswordHistories
+                .Where(p => p.UserId == user.Id)
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(PasswordHistoryLimit)
+                .Select(p => p.HashedPassword)
+                .ToListAsync();
+
+            // Check if the new password matches any of the last 2 passwords
+            foreach (var oldPassword in lastPasswords)
+            {
+                if (_userManager.PasswordHasher.VerifyHashedPassword(user, oldPassword, Input.NewPassword) == PasswordVerificationResult.Success)
+                {
+                    ModelState.AddModelError(string.Empty, "You cannot reuse the last 2 passwords.");
+                    return Page();
+                }
+            }
+
+            // Change password
             var result = await _userManager.ChangePasswordAsync(user, Input.CurrentPassword, Input.NewPassword);
 
             if (result.Succeeded)
             {
+                // Save new password hash
                 var hashedNewPassword = _userManager.PasswordHasher.HashPassword(user, Input.NewPassword);
                 _context.PasswordHistories.Add(new PasswordHistory
                 {
@@ -120,6 +143,17 @@ namespace ApplicationSecurity.Pages.Account
                     HashedPassword = hashedNewPassword,
                     CreatedAt = DateTime.UtcNow
                 });
+
+                // Remove oldest password if more than 2 stored
+                var passwordHistory = await _context.PasswordHistories
+                    .Where(p => p.UserId == user.Id)
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
+
+                if (passwordHistory.Count > PasswordHistoryLimit)
+                {
+                    _context.PasswordHistories.Remove(passwordHistory.Last());
+                }
 
                 await _context.SaveChangesAsync();
                 await _signInManager.RefreshSignInAsync(user);
